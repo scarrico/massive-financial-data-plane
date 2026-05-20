@@ -6,6 +6,16 @@ This Blocks agent coordinates Massive financial market-data jobs through Agent
 Work Boards. It seeds and inspects work cards; long-running downloads and
 technical-feature generation should run in Python worker processes.
 
+## How It Fits With Agent Work Boards
+
+This agent is the market-data workload entrypoint. It does not replace Kanban or
+Scrum. It creates and inspects financial data-plane cards on an Agent Work Board,
+then Python workers claim those cards to download Massive data and calculate
+public example technicals.
+
+Use `agent_kanban_board` for general board operations, `agent_brain` for mutable
+instructions and remembered summaries, and this agent for market-data planning.
+
 Example request:
 
 ```json

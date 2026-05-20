@@ -4,6 +4,8 @@
     "displayName": "Massive Financial Data Plane",
     "description": "Coordinates Massive financial market-data prefetch and feature-generation jobs through Agent Work Boards.",
     "version": "1.0.0",
+    "documentationUrl": "https://github.com/scarrico/massive-financial-data-plane/tree/main/agent_massive_financial_data_plane",
+    "repositoryUrl": "https://github.com/scarrico/massive-financial-data-plane",
     "provider": {
       "organization": "agent_massive_financial_data_plane"
     }
@@ -26,6 +28,7 @@
           "start": "2024-01-01",
           "end": "2026-05-20",
           "backend": "sqlite",
+          "board_id": "market-data-nightly",
           "db_path": "data/nightly.sqlite"
         },
         "schema": {

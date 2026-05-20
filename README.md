@@ -1,0 +1,103 @@
+# Massive Financial Data Plane
+
+## What This Repo Provides
+
+- An agent-based method for downloading market data with orchestration mediated
+  by Blocks and an agent-facing Kanban board
+- Chunked Massive download cards so multiple workers can share a nightly run
+- Provider-aware pacing and retry behavior for long-running data jobs
+- Parquet output written as each ticker finishes
+- A staged handoff from download cards to simple public technical-feature cards
+- A local fallback path that can run without Blocks on one machine
+- A Blocks agent named `agent_massive_financial_data_plane` for seeding and
+  inspecting financial data-plane work
+
+This repo is a market-data workload built on top of the generic
+`agent-work-boards` coordination layer. The Kanban board owns work state; these
+workers own Massive downloads, Parquet writes, and the public feature example.
+Massive is the current name for the service formerly known as Polygon.io; the
+worker still accepts `POLYGON_API_KEY` and old `--polygon-*` flags for
+compatibility.
+
+## Dependency
+
+Install the work-board package first. During local development from this split
+directory layout:
+
+```bash
+python3.11 -m pip install -e ../agent-work-boards
+python3.11 -m pip install -e .
+```
+
+Once the work-board package is published, this repo can depend on the published
+package instead of the sibling directory.
+
+## Flow
+
+```text
+strategy requests -> deduplicated symbol set -> chunked download cards
+download workers -> ticker Parquet files -> technical-work cards
+technical workers -> feature Parquet files
+```
+
+The public technical stage intentionally computes only a small feature set:
+`return_1d`, `sma_20`, `atr_14`, and `rsi_14`.
+
+## Local Nightly Example
+
+```bash
+python3.11 data_plane/nightly_plan.py register-file russell1000 ../v4.3.0/data/config/russell1000.csv --column ticker
+python3.11 data_plane/nightly_plan.py seed-prefetch --start 2024-01-01 --end 2026-05-20 --backend sqlite --db-path data/nightly.sqlite --symbols-per-card 50
+python3.11 data_plane/prefetch/worker.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch --worker-id prefetch-01 --limit 1
+python3.11 data_plane/technicals/planner.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch --artifacts-per-card 25
+python3.11 data_plane/technicals/worker.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch --worker-id technicals-01 --limit 1
+```
+
+In production, use Blocks to create, inspect, and move board cards while the
+worker processes do the long-running data work. If Blocks is unavailable, the
+same requests can be run with the Python CLIs against the same board.
+
+## Blocks Agent
+
+The Blocks package is under
+[agent_massive_financial_data_plane](agent_massive_financial_data_plane). It is
+intentionally an orchestration surface: it registers requested symbols, seeds
+prefetch cards, plans technical-feature cards, and reports status. Long-running
+downloads and feature generation stay in worker processes.
+
+Example request:
+
+```json
+{
+  "action": "seed_prefetch",
+  "symbols": ["AAPL", "MSFT"],
+  "start": "2024-01-01",
+  "end": "2026-05-20",
+  "backend": "sqlite",
+  "db_path": "data/nightly.sqlite"
+}
+```
+
+## More
+
+See [TICKER_WORKERS.md](TICKER_WORKERS.md) for worker commands, HTTP board
+coordination, and local parallel fallback.
+
+## Credentials
+
+Runtime startup requires local environment variables or ignored `.env` files.
+Users running their own copy must provide their own Massive and board
+configuration.
+
+Before publishing the repo, run:
+
+```bash
+python3.11 scripts/secret_scan.py
+```
+
+## License
+
+Copyright 2026 Sandra Carrico.
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) and
+[NOTICE](NOTICE).

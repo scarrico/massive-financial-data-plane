@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "massive-financial-data-plane"
+version = "0.1.0"
+description = "Massive financial market-data workers coordinated through agent-facing Kanban boards."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Sandra Carrico" }]
+dependencies = [
+  "agent-work-boards>=0.1.0",
+  "pandas",
+  "pyarrow",
+  "massive",
+]
+
+[tool.setuptools]
+packages = [
+  "data_plane",
+  "data_plane.prefetch",
+  "data_plane.technicals",
+]

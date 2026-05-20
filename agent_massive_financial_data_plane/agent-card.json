@@ -1,0 +1,91 @@
+{
+  "identity": {
+    "agentName": "agent_massive_financial_data_plane",
+    "displayName": "Massive Financial Data Plane",
+    "description": "Coordinates Massive financial market-data prefetch and feature-generation jobs through Agent Work Boards.",
+    "version": "1.0.0",
+    "provider": {
+      "organization": "agent_massive_financial_data_plane"
+    }
+  },
+  "capabilities": {
+    "taskKinds": [
+      "request"
+    ]
+  },
+  "io": {
+    "inputs": [
+      {
+        "id": "request",
+        "description": "Massive financial data-plane orchestration request.",
+        "contentType": "application/json",
+        "required": true,
+        "example": {
+          "action": "seed_prefetch",
+          "symbols": ["AAPL", "MSFT"],
+          "start": "2024-01-01",
+          "end": "2026-05-20",
+          "backend": "sqlite",
+          "db_path": "data/nightly.sqlite"
+        },
+        "schema": {
+          "type": "object",
+          "required": ["action"],
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": ["register_request", "plan", "seed_prefetch", "plan_technicals", "status"]
+            },
+            "symbols": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "strategy": {"type": "string"},
+            "requests_path": {"type": "string"},
+            "provider": {"type": "string"},
+            "interval": {"type": "string"},
+            "start": {"type": "string"},
+            "end": {"type": "string"},
+            "symbols_per_card": {"type": "integer"},
+            "artifacts_per_card": {"type": "integer"},
+            "priority": {"type": "integer"},
+            "backend": {"type": "string"},
+            "board_client": {"type": "string"},
+            "board_id": {"type": "string"},
+            "board_url": {"type": "string"},
+            "db_path": {"type": "string"},
+            "ssh_host": {"type": "string"},
+            "ssh_root": {"type": "string"},
+            "ssh_python": {"type": "string"},
+            "ssh_user": {"type": "string"},
+            "ssh_port": {"type": "integer"},
+            "ssh_key": {"type": "string"},
+            "column": {"type": "string"},
+            "actor": {"type": "string"}
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "id": "result",
+        "description": "Data-plane orchestration result.",
+        "contentType": "application/json",
+        "guaranteed": true
+      }
+    ]
+  },
+  "skills": [
+    {
+      "id": "main",
+      "name": "Massive Financial Data Plane",
+      "description": "Seeds and inspects Massive financial market-data work coordinated by Agent Work Boards."
+    }
+  ],
+  "runtime": {
+    "handler": "./handler.ts",
+    "handlerExport": "default",
+    "concurrency": 1,
+    "expectedInstances": 1
+  }
+}

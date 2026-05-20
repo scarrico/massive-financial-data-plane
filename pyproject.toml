@@ -8,14 +8,30 @@ version = "0.1.0"
 description = "Massive financial market-data workers coordinated through agent-facing Kanban boards."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
 authors = [{ name = "Sandra Carrico" }]
 dependencies = [
-  "agent-work-boards>=0.1.0",
+  "agent-work-board>=0.1.0",
   "pandas",
   "pyarrow",
   "massive",
 ]
+
+[project.optional-dependencies]
+dev = [
+  "build",
+  "twine",
+]
+
+[project.scripts]
+massive-data-plane = "data_plane.nightly_plan:main"
+massive-data-plane-request = "data_plane_handler:main"
+massive-prefetch = "data_plane.prefetch.run:main"
+massive-prefetch-worker = "data_plane.prefetch.worker:main"
+massive-prefetch-agent = "data_plane.prefetch.agent:main"
+massive-prefetch-seed = "data_plane.prefetch.seed_jobs:main"
+massive-technicals-planner = "data_plane.technicals.planner:main"
+massive-technicals-worker = "data_plane.technicals.worker:main"
 
 [tool.setuptools]
 packages = [
@@ -23,3 +39,4 @@ packages = [
   "data_plane.prefetch",
   "data_plane.technicals",
 ]
+py-modules = ["data_plane_handler"]

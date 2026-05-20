@@ -29,6 +29,15 @@ python3.11 -m pip install -e ../agent-work-boards
 python3.11 -m pip install -e .
 ```
 
+After installation, console scripts are available:
+
+```bash
+massive-data-plane plan
+massive-prefetch-worker --help
+massive-technicals-worker --help
+massive-data-plane-request < request.json
+```
+
 Once the work-board package is published, this repo can depend on the published
 package instead of the sibling directory.
 

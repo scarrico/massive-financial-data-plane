@@ -33,6 +33,7 @@ After installation, console scripts are available:
 
 ```bash
 massive-data-plane plan
+massive-data-plane-demo --help
 massive-prefetch-worker --help
 massive-technicals-worker --help
 massive-data-plane-request < request.json
@@ -92,10 +93,23 @@ Defaults are intentionally small for free Massive API keys: `2` symbols per
 download card and `2` artifacts per technicals card. For a paid or higher-rate
 setup, raise those with `--symbols-per-card 50` and `--artifacts-per-card 25`.
 
+Run the full local pipeline without a Massive API key:
+
+```bash
+python3.11 data_plane/demo.py
+```
+
+That demo registers a four-symbol request, seeds two prefetch cards, starts two
+prefetch worker processes, writes price Parquet artifacts incrementally, plans
+technical-feature cards, starts two technical worker processes, and writes
+public RSI 14 / ATR 14 feature Parquet artifacts. It uses deterministic demo
+bars by default. To call Massive instead, provide `MASSIVE_API_KEY` in `.env`
+and add `--live`.
+
 ```bash
 python3.11 data_plane/nightly_plan.py register-file russell1000 ../v4.3.0/data/config/russell1000.csv --column ticker
 python3.11 data_plane/nightly_plan.py seed-prefetch --start 2024-01-01 --end 2026-05-20 --backend sqlite --db-path data/nightly.sqlite
-python3.11 data_plane/prefetch/worker.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch --worker-id prefetch-01 --limit 1
+python3.11 data_plane/prefetch/worker.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch --worker-id prefetch-01 --limit 1 --min-symbol-seconds 4
 python3.11 data_plane/technicals/planner.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch
 python3.11 data_plane/technicals/worker.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch --worker-id technicals-01 --limit 1
 ```

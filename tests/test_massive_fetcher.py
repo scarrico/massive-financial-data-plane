@@ -1,10 +1,12 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from _paths import add_work_board_repo
 
 add_work_board_repo()
 
-from data_plane.prefetch.massive_fetcher import _agg_to_dict
+from data_plane.prefetch.massive_fetcher import _agg_to_dict, write_demo_bars_to_parquet
 
 
 class MassiveFetcherTests(unittest.TestCase):
@@ -30,6 +32,14 @@ class MassiveFetcherTests(unittest.TestCase):
         self.assertEqual(mapped["c"], 1.5)
         self.assertEqual(mapped["v"], 100)
         self.assertEqual(mapped["t"], 123)
+
+    def test_write_demo_bars_to_parquet_writes_ohlcv(self):
+        with TemporaryDirectory() as tmp:
+            result = write_demo_bars_to_parquet("AAPL", "2024-01-01", "2024-02-15", "1d", tmp)
+
+            self.assertEqual(result.symbol, "AAPL")
+            self.assertGreater(result.rows, 20)
+            self.assertTrue(Path(result.artifact_path).exists())
 
 
 if __name__ == "__main__":

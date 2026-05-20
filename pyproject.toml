@@ -25,6 +25,7 @@ dev = [
 
 [project.scripts]
 massive-data-plane = "data_plane.nightly_plan:main"
+massive-data-plane-demo = "data_plane.demo:main"
 massive-data-plane-request = "data_plane_handler:main"
 massive-prefetch = "data_plane.prefetch.run:main"
 massive-prefetch-worker = "data_plane.prefetch.worker:main"

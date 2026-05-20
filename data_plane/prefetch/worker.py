@@ -15,7 +15,7 @@ from kanban.client import create_board_client
 from kanban.config import load_dotenv
 from kanban.workflows import complete_work_item
 from data_plane.prefetch.jobs import finish_symbol_cycle, payload_symbols
-from data_plane.prefetch.massive_fetcher import prefetch_massive_to_parquet
+from data_plane.prefetch.massive_fetcher import prefetch_massive_to_parquet, write_demo_bars_to_parquet
 from data_plane.prefetch.rate_limit import RateLimiter
 
 
@@ -29,6 +29,7 @@ def main() -> None:
     parser.add_argument("--massive-calls-per-minute", "--polygon-calls-per-minute", dest="massive_calls_per_minute", type=float, default=60)
     parser.add_argument("--min-symbol-seconds", type=float, default=4.0)
     parser.add_argument("--sleep", type=float, default=0.0)
+    parser.add_argument("--demo-data", action="store_true", help="Write deterministic demo bars instead of calling Massive.")
     args = parser.parse_args()
 
     load_dotenv()
@@ -57,15 +58,24 @@ def main() -> None:
             results = []
             for symbol in payload_symbols(payload):
                 started = perf_counter()
-                result = prefetch_massive_to_parquet(
-                    symbol=symbol,
-                    start=payload["start"],
-                    end=payload["end"],
-                    interval=payload["interval"],
-                    artifact_dir=artifact_dir,
-                    limit=args.massive_limit,
-                    rate_limiter=rate_limiter,
-                )
+                if args.demo_data:
+                    result = write_demo_bars_to_parquet(
+                        symbol=symbol,
+                        start=payload["start"],
+                        end=payload["end"],
+                        interval=payload["interval"],
+                        artifact_dir=artifact_dir,
+                    )
+                else:
+                    result = prefetch_massive_to_parquet(
+                        symbol=symbol,
+                        start=payload["start"],
+                        end=payload["end"],
+                        interval=payload["interval"],
+                        artifact_dir=artifact_dir,
+                        limit=args.massive_limit,
+                        rate_limiter=rate_limiter,
+                    )
                 elapsed = finish_symbol_cycle(started, args.min_symbol_seconds)
                 results.append({**asdict(result), "elapsed_seconds": round(elapsed, 3)})
             if not results:

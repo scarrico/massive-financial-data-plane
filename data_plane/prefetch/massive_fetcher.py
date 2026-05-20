@@ -117,6 +117,57 @@ def prefetch_massive_to_parquet(
     )
 
 
+def write_demo_bars_to_parquet(
+    symbol: str,
+    start: str,
+    end: str,
+    interval: str,
+    artifact_dir: str | Path,
+) -> PrefetchResult:
+    artifact_dir = Path(artifact_dir)
+    artifact_path = artifact_dir / interval / f"{clean_symbol(symbol)}.parquet"
+    artifact_path.parent.mkdir(parents=True, exist_ok=True)
+    data = demo_bars(symbol, start, end)
+    data.to_parquet(artifact_path, index=True)
+    return PrefetchResult(
+        symbol=symbol,
+        provider="massive-demo",
+        interval=interval,
+        start=start,
+        end=end,
+        artifact_path=str(artifact_path),
+        rows=int(len(data)),
+        min_timestamp=data.index.min().isoformat() if len(data) else None,
+        max_timestamp=data.index.max().isoformat() if len(data) else None,
+    )
+
+
+def demo_bars(symbol: str, start: str, end: str) -> pd.DataFrame:
+    dates = pd.date_range(start, end, freq="B")
+    seed = sum(ord(char) for char in symbol.upper())
+    base = 50.0 + (seed % 80)
+    step = 0.12 + (seed % 7) * 0.01
+    rows = []
+    for index, timestamp in enumerate(dates):
+        close = base + index * step + ((index % 5) - 2) * 0.08
+        open_price = close - 0.15
+        high = close + 0.65
+        low = close - 0.7
+        rows.append(
+            {
+                "ticker": symbol.upper(),
+                "Open": round(open_price, 4),
+                "High": round(high, 4),
+                "Low": round(low, 4),
+                "Close": round(close, 4),
+                "Adj Close": round(close, 4),
+                "Volume": 1_000_000 + index * 1000 + seed,
+                "Date_str": timestamp.strftime("%Y-%m-%d"),
+            }
+        )
+    return pd.DataFrame(rows, index=dates.rename("timestamp"))
+
+
 def clean_symbol(symbol: str) -> str:
     return str(symbol).replace("/", "_").replace("^", "INDEX_").replace(".", "_").upper()
 

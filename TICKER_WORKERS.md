@@ -2,6 +2,16 @@
 
 This is the first practical Kanban workload: market-data prefetch jobs.
 
+Run the end-to-end local demo first:
+
+```bash
+python3.11 data_plane/demo.py
+```
+
+It starts multiple local worker processes, writes price Parquet files, moves
+download cards to `technicals`, plans public technical-feature cards, and writes
+feature Parquet files. It uses deterministic demo bars unless `--live` is set.
+
 Register symbols requested by a strategy:
 
 ```bash

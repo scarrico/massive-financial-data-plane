@@ -19,6 +19,10 @@ Massive is the current name for the service formerly known as Polygon.io; the
 worker still accepts `POLYGON_API_KEY` and old `--polygon-*` flags for
 compatibility.
 
+For deployment mode choices, use the `agent-work-boards` deployment guide:
+local SQLite for one-machine demos, Jira plus Brain plus PubNub for team
+setups, and SSH RPC when worker machines should not run HTTP services.
+
 ## Dependency
 
 Install the work-board package first. During local development from this split

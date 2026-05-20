@@ -16,6 +16,22 @@ public example technicals.
 Use `agent_kanban_board` for general board operations, `agent_brain` for mutable
 instructions and remembered summaries, and this agent for market-data planning.
 
+## Runtime Keys
+
+For local development, put keys in ignored `.env` files:
+
+```bash
+cd ..
+cp .env.example .env
+# edit .env and set MASSIVE_API_KEY
+
+cd agent_massive_financial_data_plane
+blocks login --write-env
+```
+
+The first `.env` is for the Massive data workers. The second is for the Blocks
+runner/publisher.
+
 Example request:
 
 ```json
@@ -25,6 +41,10 @@ Example request:
   "start": "2024-01-01",
   "end": "2026-05-20",
   "backend": "sqlite",
-  "db_path": "data/nightly.sqlite"
+  "board_id": "market-data-nightly",
+  "db_path": "data/nightly.sqlite",
+  "symbols_per_card": 2
 }
 ```
+
+For paid or higher-rate Massive usage, set `"symbols_per_card": 50`.

@@ -30,7 +30,7 @@ def main() -> None:
     parser.add_argument("--interval", default="1d")
     parser.add_argument("--priority", type=int, default=0)
     parser.add_argument("--provider", default="massive")
-    parser.add_argument("--symbols-per-card", type=int, default=100)
+    parser.add_argument("--symbols-per-card", type=int, default=2)
     args = parser.parse_args()
 
     load_dotenv()

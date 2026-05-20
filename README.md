@@ -41,6 +41,40 @@ massive-data-plane-request < request.json
 Once the work-board package is published, this repo can depend on the published
 package instead of the sibling directory.
 
+## API Keys
+
+Put runtime keys in a local `.env` file in this repo. Do not commit that file.
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env`:
+
+```text
+MASSIVE_API_KEY=your-massive-key
+```
+
+`POLYGON_API_KEY` is still accepted as a compatibility fallback for older
+accounts, but new setups should use `MASSIVE_API_KEY`.
+
+If you are running the Blocks agent locally or publishing it, also put the
+Blocks key in the Blocks agent directory:
+
+```bash
+cd agent_massive_financial_data_plane
+blocks login --write-env
+```
+
+Jira-backed board usage also needs Jira settings in `.env`:
+
+```text
+JIRA_BASE_URL=https://your-site.atlassian.net
+JIRA_PROJECT_KEY=AWQ
+JIRA_EMAIL=you@example.com
+JIRA_API_TOKEN=your-jira-token
+```
+
 ## Flow
 
 ```text
@@ -54,12 +88,23 @@ The public technical stage intentionally computes only a small feature set:
 
 ## Local Nightly Example
 
+Defaults are intentionally small for free Massive API keys: `2` symbols per
+download card and `2` artifacts per technicals card. For a paid or higher-rate
+setup, raise those with `--symbols-per-card 50` and `--artifacts-per-card 25`.
+
 ```bash
 python3.11 data_plane/nightly_plan.py register-file russell1000 ../v4.3.0/data/config/russell1000.csv --column ticker
-python3.11 data_plane/nightly_plan.py seed-prefetch --start 2024-01-01 --end 2026-05-20 --backend sqlite --db-path data/nightly.sqlite --symbols-per-card 50
+python3.11 data_plane/nightly_plan.py seed-prefetch --start 2024-01-01 --end 2026-05-20 --backend sqlite --db-path data/nightly.sqlite
 python3.11 data_plane/prefetch/worker.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch --worker-id prefetch-01 --limit 1
-python3.11 data_plane/technicals/planner.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch --artifacts-per-card 25
+python3.11 data_plane/technicals/planner.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch
 python3.11 data_plane/technicals/worker.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch --worker-id technicals-01 --limit 1
+```
+
+Higher-throughput example:
+
+```bash
+python3.11 data_plane/nightly_plan.py seed-prefetch --start 2024-01-01 --end 2026-05-20 --backend sqlite --db-path data/nightly.sqlite --symbols-per-card 50
+python3.11 data_plane/technicals/planner.py --backend sqlite --db-path data/nightly.sqlite --board data-prefetch --artifacts-per-card 25
 ```
 
 In production, use Blocks to create, inspect, and move board cards while the
@@ -83,7 +128,8 @@ Example request:
   "start": "2024-01-01",
   "end": "2026-05-20",
   "backend": "sqlite",
-  "db_path": "data/nightly.sqlite"
+  "db_path": "data/nightly.sqlite",
+  "symbols_per_card": 2
 }
 ```
 

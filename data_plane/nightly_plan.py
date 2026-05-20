@@ -59,7 +59,7 @@ def main() -> None:
     seed.add_argument("--ssh-key")
     seed.add_argument("--db-path", default="kanban.sqlite")
     seed.add_argument("--priority", type=int, default=10)
-    seed.add_argument("--symbols-per-card", type=int, default=100)
+    seed.add_argument("--symbols-per-card", type=int, default=2)
 
     args = parser.parse_args()
     if args.command == "register":

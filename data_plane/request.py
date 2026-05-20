@@ -41,7 +41,7 @@ def execute_data_plane_request(request: dict[str, Any]) -> dict[str, Any] | list
         ))
         board = _board(request)
         cards = []
-        for chunk in symbol_chunks(symbols, int(request.get("symbols_per_card", 100))):
+        for chunk in symbol_chunks(symbols, int(request.get("symbols_per_card", 2))):
             symbol_payload = {"symbol": chunk[0]} if len(chunk) == 1 else {"symbols": chunk}
             title = f"Prefetch {chunk[0]}" if len(chunk) == 1 else f"Prefetch {chunk[0]}..{chunk[-1]} ({len(chunk)} symbols)"
             card = board.add_card(
@@ -70,7 +70,7 @@ def execute_data_plane_request(request: dict[str, Any]) -> dict[str, Any] | list
             failed = board.move_failed(parent.id, actor=worker_id, error="missing downloaded artifacts")
             return {"planned": 0, "parent": asdict(failed), "children": []}
         children = []
-        for index, chunk in enumerate(artifact_chunks(artifacts, int(request.get("artifacts_per_card", 25))), start=1):
+        for index, chunk in enumerate(artifact_chunks(artifacts, int(request.get("artifacts_per_card", 2))), start=1):
             child = board.add_card(
                 f"Technicals {parent.id} part {index} ({len(chunk)} symbols)",
                 payload={"job_type": "public_technicals", "source_card_id": parent.id, "artifacts": chunk},
@@ -85,7 +85,7 @@ def execute_data_plane_request(request: dict[str, Any]) -> dict[str, Any] | list
             payload_update={
                 "technical_work_cards": [child["id"] for child in children],
                 "technical_work_card_count": len(children),
-                "artifacts_per_card": int(request.get("artifacts_per_card", 25)),
+                "artifacts_per_card": int(request.get("artifacts_per_card", 2)),
             },
         )
         return {"planned": len(children), "parent": asdict(done), "children": children}

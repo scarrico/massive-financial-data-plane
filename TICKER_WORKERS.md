@@ -17,17 +17,18 @@ python3.11 data_plane/nightly_plan.py plan
 Seed prefetch jobs from registered requests:
 
 ```bash
-python3.11 data_plane/nightly_plan.py seed-prefetch --start 2024-01-01 --end 2026-05-20 --backend sqlite --db-path data/nightly.sqlite --symbols-per-card 100
+python3.11 data_plane/nightly_plan.py seed-prefetch --start 2024-01-01 --end 2026-05-20 --backend sqlite --db-path data/nightly.sqlite
 ```
 
 Seed jobs onto Jira/Kanban:
 
 ```bash
-python3.11 data_plane/prefetch/seed_jobs.py AAPL MSFT SPY --board data-prefetch --priority 10 --symbols-per-card 100
+python3.11 data_plane/prefetch/seed_jobs.py AAPL MSFT SPY --board data-prefetch --priority 10
 ```
 
-`--symbols-per-card` defaults to `100`. Use `1` for maximum scheduling
-granularity, or larger chunks when the board backend is the bottleneck.
+`--symbols-per-card` defaults to `2` so a free Massive API key can run a small
+demo without creating oversized download cards. For a paid or higher-rate setup,
+use `--symbols-per-card 50`.
 
 Run workers:
 
@@ -40,8 +41,11 @@ Successful prefetch cards move to `technicals`. Split a downloaded card into
 smaller technical-work cards:
 
 ```bash
-python3.11 data_plane/technicals/planner.py --board data-prefetch --worker-id technicals-planner --artifacts-per-card 25
+python3.11 data_plane/technicals/planner.py --board data-prefetch --worker-id technicals-planner
 ```
+
+`--artifacts-per-card` defaults to `2`. For higher-throughput feature work, use
+`--artifacts-per-card 25`.
 
 Run public feature workers against those cards:
 
@@ -132,6 +136,18 @@ MASSIVE_API_KEY
 
 `POLYGON_API_KEY` is still accepted as a compatibility fallback for accounts and
 scripts created before the Polygon.io rebrand.
+
+Put the key in a local ignored `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env`:
+
+```text
+MASSIVE_API_KEY=your-massive-key
+```
 
 The Massive Python client examples use `limit=50000` for aggregate bars,
 and their README recommends using the maximum supported limit for large datasets

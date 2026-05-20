@@ -29,7 +29,8 @@
           "end": "2026-05-20",
           "backend": "sqlite",
           "board_id": "market-data-nightly",
-          "db_path": "data/nightly.sqlite"
+          "db_path": "data/nightly.sqlite",
+          "symbols_per_card": 2
         },
         "schema": {
           "type": "object",

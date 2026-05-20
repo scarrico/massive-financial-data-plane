@@ -20,7 +20,7 @@ def main() -> None:
     add_board_args(parser, default_backend="sqlite")
     parser.add_argument("--worker-id", default="technicals-planner")
     parser.add_argument("--limit", type=int, default=1)
-    parser.add_argument("--artifacts-per-card", type=int, default=25)
+    parser.add_argument("--artifacts-per-card", type=int, default=2)
     parser.add_argument("--priority", type=int, default=10)
     args = parser.parse_args()
 

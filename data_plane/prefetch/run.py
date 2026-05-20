@@ -34,7 +34,7 @@ def main() -> None:
     parser.add_argument("--massive-limit", "--polygon-limit", dest="massive_limit", type=int, default=50000)
     parser.add_argument("--massive-calls-per-minute", "--polygon-calls-per-minute", dest="massive_calls_per_minute", type=float, default=60)
     parser.add_argument("--min-symbol-seconds", type=float, default=4.0)
-    parser.add_argument("--symbols-per-card", type=int, default=100)
+    parser.add_argument("--symbols-per-card", type=int, default=2)
     parser.add_argument("--mode", choices=["auto", "kanban", "parallel"], default="auto")
     args = parser.parse_args()
 

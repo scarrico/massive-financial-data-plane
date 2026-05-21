@@ -22,6 +22,9 @@ dev = [
   "build",
   "twine",
 ]
+mcp = [
+  "mcp",
+]
 
 [project.scripts]
 massive-data-plane = "data_plane.nightly_plan:main"
@@ -33,6 +36,7 @@ massive-prefetch-agent = "data_plane.prefetch.agent:main"
 massive-prefetch-seed = "data_plane.prefetch.seed_jobs:main"
 massive-technicals-planner = "data_plane.technicals.planner:main"
 massive-technicals-worker = "data_plane.technicals.worker:main"
+massive-data-plane-mcp = "data_plane.mcp_server:main"
 
 [tool.setuptools]
 packages = [

@@ -11,6 +11,8 @@
 - A local fallback path that can run without Blocks on one machine
 - A Blocks agent named `agent_massive_financial_data_plane` for seeding and
   inspecting financial data-plane work
+- An MCP server that gives AI agents direct Massive market-data tools plus
+  board-backed pipeline tools
 
 This repo is a market-data workload built on top of the generic
 `agent-work-boards` coordination layer. The Kanban board owns work state; these
@@ -41,6 +43,7 @@ massive-data-plane-demo --help
 massive-prefetch-worker --help
 massive-technicals-worker --help
 massive-data-plane-request < request.json
+massive-data-plane-mcp
 ```
 
 Once the work-board package is published, this repo can depend on the published
@@ -128,6 +131,28 @@ python3.11 data_plane/technicals/planner.py --backend sqlite --db-path data/nigh
 In production, use Blocks to create, inspect, and move board cards while the
 worker processes do the long-running data work. If Blocks is unavailable, the
 same requests can be run with the Python CLIs against the same board.
+
+## MCP Agent Access
+
+Install the MCP extra when an AI agent should call Massive and the data plane as
+tools:
+
+```bash
+python3.11 -m pip install -e ".[mcp]"
+```
+
+Run the server over stdio:
+
+```bash
+massive-data-plane-mcp
+```
+
+The MCP server exposes board tools such as `register_data_request`,
+`seed_prefetch_cards`, and `data_plane_status`, plus direct market-data tools
+such as `get_stock_bars`, `get_stock_last_quote`, `get_stock_last_trade`,
+`get_stock_quotes`, and `get_stock_market_snapshot`.
+
+See [docs/MCP.md](docs/MCP.md) for the full tool list.
 
 ## Blocks Agent
 

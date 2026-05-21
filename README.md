@@ -168,6 +168,13 @@ Before publishing the repo, run:
 python3.11 scripts/secret_scan.py
 ```
 
+Use the release checklist in the sibling `agent-work-boards` repo before
+publishing Python packages, Blocks agents, or git changes:
+
+```text
+../agent-work-boards/docs/RELEASE_CHECKLIST.md
+```
+
 ## License
 
 Copyright 2026 Sandra Carrico.

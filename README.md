@@ -162,6 +162,18 @@ intentionally an orchestration surface: it registers requested symbols, seeds
 prefetch cards, plans technical-feature cards, and reports status. Long-running
 downloads and feature generation stay in worker processes.
 
+If another organization wants to host its own copy, create a renamed Blocks
+agent directory before publishing:
+
+```bash
+python3.11 scripts/localize_blocks_agent.py agent_massive_financial_data_plane my_org_massive_data --organization my_org
+cd my_org_massive_data
+blocks login --write-env
+blocks check
+blocks publish --listing private --billing-mode free --accept-terms
+blocks run
+```
+
 Example request:
 
 ```json
